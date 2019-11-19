@@ -30,8 +30,8 @@ class MainActivity : AppCompatActivity() {
                 override fun onGlobalLayout() {
                     view.viewTreeObserver.removeOnGlobalLayoutListener(this)
                     numberLabel.text = getGreenCountLabel()
-                    svg = SVG.getFromAsset(assets, "tree_nocolor.svg")
-                    measureSVGAndRender(svg, true)
+                    svg = SVG.getFromAsset(assets, "tree.svg")
+                    measureSVGAndRender(svg)
                 }
             }
         )
@@ -56,10 +56,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun getGreenCountLabel(): String {
         return "${(greenCount + 1)} of 61"
-
     }
 
-    private fun measureSVGAndRender(svg: SVG, forceReload: Boolean = false) {
+    private fun measureSVGAndRender(svg: SVG) {
         viewBox = svg.documentViewBox
 
         // svg's from inkscape might need this
@@ -71,25 +70,23 @@ class MainActivity : AppCompatActivity() {
         val width = this.map.width.toFloat()
 
         newBM = Bitmap.createBitmap(width.toInt(), height.toInt(), Bitmap.Config.ARGB_8888)
-        bmCanvas = Canvas(newBM)
-        bmCanvas.drawRGB(255, 255, 255)
-
-        svgView = this.map
-
-//        var css = " #L02 { visibility: hidden; } "
-
-        renderSVG()
+        newBM?.let {
+            bmCanvas = Canvas(it)
+            bmCanvas.drawRGB(255, 255, 255)
+            svgView = this.map
+            renderSVG()
+        }
     }
 
     private fun renderSVG() {
-        var css = hideLeaves(greenCount)
+        val css = setLeafColors(greenCount)
         val renderOpts = RenderOptions.create().css(css)
 
         svg.renderToCanvas(bmCanvas, renderOpts)
         svgView?.setImageBitmap(newBM)
     }
 
-    private fun hideLeaves(greenCount: Int): String {
+    private fun setLeafColors(greenCount: Int): String {
         var result = ""
 
         for (i in 0..60) {
@@ -99,16 +96,6 @@ class MainActivity : AppCompatActivity() {
                 result += " #L$i .st1 { fill: #d3d3d3; } "
             }
         }
-
-//        for (i in start..60) {
-////            result += " #L$i { visibility: hidden; }"
-//            result += " #L$i .st1 { fill: rgb(102, 102, 102); } "
-//        }
-
-//        result += " #jj { fill: rgb(102, 102, 102); } "
-//        result += " #L0 .st1 { fill: rgb(87, 138, 0); }"
-//        result += " #L0 .st1 { fill: rgb(102, 102, 102); }"
-//        result += " #L0 .st1 { fill: #a6666666; }"
 
         return result
     }
