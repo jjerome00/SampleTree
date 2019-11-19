@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
                 override fun onGlobalLayout() {
                     view.viewTreeObserver.removeOnGlobalLayoutListener(this)
                     numberLabel.text = getGreenCountLabel()
-                    svg = SVG.getFromAsset(assets, "tree_nocolor.svg")
+                    svg = SVG.getFromAsset(assets, "tree.svg")
                     measureSVGAndRender(svg)
                 }
             }
